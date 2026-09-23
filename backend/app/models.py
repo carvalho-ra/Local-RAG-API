@@ -9,7 +9,8 @@ class Document(Base):
     __tablename__ = "documents"
     id: Mapped[int] = mapped_column(primary_key=True)
     filename: Mapped[str] = mapped_column(String(255))
-    content: Mapped[str] = mapped_column(Text)
+    content_type: Mapped[str] = mapped_column(String(100))
+    storage_key: Mapped[str] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
     chunks: Mapped[list["Chunk"]] = relationship(back_populates="document")
 
