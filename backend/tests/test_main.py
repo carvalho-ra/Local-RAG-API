@@ -26,3 +26,19 @@ async def test_ask():
 
         assert response.status_code == 200
         assert response.json() == {"answer": "resposta final"}
+
+
+@pytest.mark.asyncio
+async def test_ask_requires_question():
+    transport = httpx.ASGITransport(app=app)
+
+    async with httpx.AsyncClient(
+        transport=transport,
+        base_url="http://test",
+    ) as client:
+        response = await client.post(
+            "/ask",
+            json={},
+        )
+
+    assert response.status_code == 422
