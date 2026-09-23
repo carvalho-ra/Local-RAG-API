@@ -42,3 +42,19 @@ async def test_ask_requires_question():
         )
 
     assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_ask_rejects_empty_question():
+    transport = httpx.ASGITransport(app=app)
+
+    async with httpx.AsyncClient(
+        transport=transport,
+        base_url="http://test",
+    ) as client:
+        response = await client.post(
+            "/ask",
+            json={"question": ""},
+        )
+
+    assert response.status_code == 422
