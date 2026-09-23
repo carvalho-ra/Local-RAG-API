@@ -3,7 +3,10 @@ from app.services.ingestion import (
     create_document,
     ingest_document,
     validate_file_type,
+    extract_text,
+    chunk_text,
     )
+import pytest
 
 
 def test_create_document():
@@ -89,3 +92,41 @@ def test_ingest_document_exe():
 
     file.close()
     db.close()
+
+
+def test_extract_text_txt():
+    content = "Hello RAG!"
+    result = extract_text(content.encode("utf-8"), "text/plain")
+
+    assert result == content
+
+
+def test_extract_text_markdown():
+    content = "# Hello RAG\n\nThis is a document."
+    result = extract_text(content.encode("utf-8"), "text/markdown")
+
+    assert result == content
+
+
+def test_extract_text_pdf():
+    with open("tests/fixtures/test.pdf", "rb") as file:
+        file_data = file.read()
+
+    result = extract_text(file_data, "application/pdf")
+
+    assert isinstance(result, str)
+    assert result.strip()
+
+
+def test_extract_text_unsupported_type():
+    with pytest.raises(ValueError):
+        extract_text(b"content", "application/octet-stream")
+
+
+def test_chunk_text():
+    result = chunk_text("ABCDEFGHIJ", 6, 2)
+
+    assert result == [
+        "ABCDEF",
+        "EFGHIJ",
+    ]
