@@ -1,10 +1,15 @@
 import os
 
-import psycopg
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import DeclarativeBase
 
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 
+engine = create_engine(DATABASE_URL)
 
-def get_connection():
-    return psycopg.connect(DATABASE_URL)
+SessionLocal = sessionmaker(bind=engine)
+
+class Base(DeclarativeBase):
+    pass
