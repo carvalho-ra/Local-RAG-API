@@ -24,6 +24,18 @@ def test_create_document():
     db.close()
 
 
+def test_validate_file_type():
+    assert validate_file_type("file.pdf", "application/pdf")
+    assert validate_file_type("file.md", "text/markdown")
+    assert validate_file_type("file.txt", "text/plain")
+
+
+def test_validate_file_type_rejects_invalid_type():
+    assert not validate_file_type("file.pdf", "text/plain")
+    assert not validate_file_type("file.md", "application/pdf")
+    assert not validate_file_type("file.exe", "application/pdf")
+
+
 def test_ingest_document_pdf():
     db = SessionLocal()
     file = open("tests/fixtures/test.pdf", "rb")
@@ -41,6 +53,7 @@ def test_ingest_document_pdf():
     assert document.storage_key.endswith("-injection.pdf")
 
     db.close()
+
 
 def test_ingest_document_md():
     db = SessionLocal()
@@ -61,13 +74,18 @@ def test_ingest_document_md():
     db.close()
 
 
-def test_validate_file_type():
-    assert validate_file_type("file.pdf", "application/pdf")
-    assert validate_file_type("file.md", "text/markdown")
-    assert validate_file_type("file.txt", "text/plain")
+def test_ingest_document_exe():
+    db = SessionLocal()
+    file = open("tests/fixtures/test.exe", "rb")
 
+    document = ingest_document(
+        db,
+        file,
+        "test.exe",
+        "text/markdown",
+    )
 
-def test_validate_file_type_rejects_invalid_type():
-    assert not validate_file_type("file.pdf", "text/plain")
-    assert not validate_file_type("file.md", "application/pdf")
-    assert not validate_file_type("file.exe", "application/pdf")
+    assert document == None
+
+    file.close()
+    db.close()

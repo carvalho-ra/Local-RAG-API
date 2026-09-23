@@ -34,8 +34,7 @@ def ingest_document(db, file_data, filename, content_type) -> Document|None:
     if validate_file_type(filename, content_type):
         storage_key = f"{uuid.uuid4()}-{filename}"
         upload_file(file_data, storage_key, content_type)
-        doc = create_document(db, filename, content_type, storage_key)
-        return doc
+        return create_document(db, filename, content_type, storage_key)
     else:
         return None
 
