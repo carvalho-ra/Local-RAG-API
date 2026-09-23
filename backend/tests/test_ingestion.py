@@ -7,7 +7,7 @@ from app.services.ingestion import (
     chunk_text,
     create_chunks,
     )
-import pytest
+import pytest, pytest_asyncio
 
 
 def test_create_document():
@@ -40,11 +40,12 @@ def test_validate_file_type_rejects_invalid_type():
     assert not validate_file_type("file.exe", "application/pdf")
 
 
-def test_ingest_document_pdf():
+@pytest.mark.asyncio
+async def test_ingest_document_pdf():
     db = SessionLocal()
     file = open("tests/fixtures/test.pdf", "rb")
 
-    document = ingest_document(
+    document = await ingest_document(
         db,
         file,
         "injection.pdf",
@@ -59,11 +60,12 @@ def test_ingest_document_pdf():
     db.close()
 
 
-def test_ingest_document_md():
+@pytest.mark.asyncio
+async def test_ingest_document_md():
     db = SessionLocal()
     file = open("tests/fixtures/README.md", "rb")
 
-    document = ingest_document(
+    document = await ingest_document(
         db,
         file,
         "README.md",
@@ -78,11 +80,12 @@ def test_ingest_document_md():
     db.close()
 
 
-def test_ingest_document_exe():
+@pytest.mark.asyncio
+async def test_ingest_document_exe():
     db = SessionLocal()
     file = open("tests/fixtures/test.exe", "rb")
 
-    document = ingest_document(
+    document = await ingest_document(
         db,
         file,
         "test.exe",
@@ -133,7 +136,8 @@ def test_chunk_text():
     ]
 
 
-def test_create_chunks():
+@pytest.mark.asyncio
+async def test_create_chunks():
     db = SessionLocal()
     document = create_document(
         db,
@@ -142,7 +146,7 @@ def test_create_chunks():
         "test.pdf",
     )
 
-    chunks = create_chunks(
+    chunks = await create_chunks(
         db,
         document,
         ["primeiro chunk", "segundo chunk"],

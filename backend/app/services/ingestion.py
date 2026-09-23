@@ -1,5 +1,6 @@
 from app.models import Document, Chunk
 from app.storage import upload_file
+from app.services.embedding import generate_embedding
 import uuid
 from pathlib import Path
 from io import BytesIO
@@ -75,14 +76,18 @@ def chunk_text(text: str, chunk_size: int, overlap: int) -> list[str]:
     return chunks
 
 
-def create_chunks(db, document, chunks):
-    chunk_objs = [
-        Chunk(
-            document_id=document.id,
-            content=content,
+async def create_chunks(db, document, chunks):
+    chunk_objs = []
+
+    for content in chunks:
+        embedding = await generate_embedding(content)
+        chunk_objs.append(
+            Chunk(
+                document_id=document.id,
+                content=content,
+                embedding=embedding,
+            )
         )
-        for content in chunks
-    ]
 
     db.add_all(chunk_objs)
     db.commit()
@@ -90,7 +95,7 @@ def create_chunks(db, document, chunks):
     return chunk_objs
 
 
-def ingest_document(db, file_data, filename, content_type) -> Document|None:
+async def ingest_document(db, file_data, filename, content_type) -> Document|None:
     if validate_file_type(filename, content_type):
         file_data = file_data.read()
 
@@ -108,7 +113,7 @@ def ingest_document(db, file_data, filename, content_type) -> Document|None:
             CHUNK_OVERLAP,
         )
 
-        create_chunks(db, document, chunks)
+        await create_chunks(db, document, chunks)
 
         return document
     
