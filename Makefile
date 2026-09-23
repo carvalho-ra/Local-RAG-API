@@ -28,7 +28,7 @@ up:
 	@docker compose up -d --build
 	@$(MAKE) --no-print-directory migrate
 
-down:
+down: clean-pycache
 	@docker compose down
 
 test:
@@ -61,6 +61,10 @@ storage_list:
 storage_clear:
 	@docker compose exec backend python scripts/storage_clear.py
 
+clean-pycache:
+	find . -type d \( -name "__pycache__" -o -name ".pytest_cache" \) -exec rm -rf {} +
+	find . -type f -name "*.pyc" -delete
+
 clean:
 	@docker compose down -v
 
@@ -68,4 +72,4 @@ fclean:
 	@docker compose down -v --remove-orphans --rmi all
 
 .PHONY: help up down test migrate migration db db_query db_table_clear db_clear \
-	storage_list storage_clear clean fclean
+	storage_list storage_clear clean-pycache clean fclean
