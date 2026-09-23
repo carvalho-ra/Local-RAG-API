@@ -22,3 +22,15 @@ def upload_file(file_data, storage_key, content_type):
     )
 
     return storage_key
+
+def download_file(storage_key):
+    response = client.get_object(
+        MINIO_BUCKET,
+        storage_key,
+    )
+
+    try:
+        return response.read()
+    finally:
+        response.close()
+        response.release_conn()
