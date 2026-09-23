@@ -1,4 +1,4 @@
-from app.models import Document
+from app.models import Document, Chunk
 from app.storage import upload_file
 import uuid
 from pathlib import Path
@@ -11,6 +11,9 @@ ALLOWED_FILE_TYPES = {
     ".md": "text/markdown",
     ".txt": "text/plain",
 }
+
+CHUNK_SIZE = 1000
+CHUNK_OVERLAP = 200
 
 
 def validate_file_type(filename, content_type) -> bool:
@@ -38,10 +41,12 @@ def extract_text(file_data: bytes, content_type: str) -> str:
 
     if content_type == "application/pdf":
         reader = PdfReader(BytesIO(file_data))
-        return "\n".join(
+        text = "\n".join(
             page.extract_text() or ""
             for page in reader.pages
         )
+
+        return text.replace("\x00", "")
 
     raise ValueError(f"Unsupported content type: {content_type}")
 
@@ -69,11 +74,42 @@ def chunk_text(text: str, chunk_size: int, overlap: int) -> list[str]:
 
     return chunks
 
-    
+
+def create_chunks(db, document, chunks):
+    chunk_objs = [
+        Chunk(
+            document_id=document.id,
+            content=content,
+        )
+        for content in chunks
+    ]
+
+    db.add_all(chunk_objs)
+    db.commit()
+
+    return chunk_objs
+
+
 def ingest_document(db, file_data, filename, content_type) -> Document|None:
     if validate_file_type(filename, content_type):
+        file_data = file_data.read()
+
         storage_key = f"{uuid.uuid4()}-{filename}"
-        upload_file(file_data, storage_key, content_type)
-        return create_document(db, filename, content_type, storage_key)
-    else:
-        return None
+
+        upload_file(BytesIO(file_data), storage_key, content_type)
+
+        document = create_document(db, filename, content_type, storage_key)
+
+        text = extract_text(file_data, content_type)
+
+        chunks = chunk_text(
+            text,
+            CHUNK_SIZE,
+            CHUNK_OVERLAP,
+        )
+
+        create_chunks(db, document, chunks)
+
+        return document
+    
+    return None

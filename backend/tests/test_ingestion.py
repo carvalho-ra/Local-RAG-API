@@ -5,6 +5,7 @@ from app.services.ingestion import (
     validate_file_type,
     extract_text,
     chunk_text,
+    create_chunks,
     )
 import pytest
 
@@ -130,3 +131,26 @@ def test_chunk_text():
         "ABCDEF",
         "EFGHIJ",
     ]
+
+
+def test_create_chunks():
+    db = SessionLocal()
+    document = create_document(
+        db,
+        "test.pdf",
+        "application/pdf",
+        "test.pdf",
+    )
+
+    chunks = create_chunks(
+        db,
+        document,
+        ["primeiro chunk", "segundo chunk"],
+    )
+
+    assert len(chunks) == 2
+    assert chunks[0].content == "primeiro chunk"
+    assert chunks[1].content == "segundo chunk"
+    assert chunks[0].document_id == document.id
+
+    db.close()

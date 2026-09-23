@@ -20,5 +20,5 @@ class Chunk(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     document_id: Mapped[int] = mapped_column(ForeignKey("documents.id"))
     content: Mapped[str] = mapped_column(Text)
-    embedding: Mapped[list[float]] = mapped_column(Vector(768))
+    embedding: Mapped[list[float]] = mapped_column(Vector(768), nullable=True)
     document: Mapped["Document"] = relationship(back_populates="chunks")
