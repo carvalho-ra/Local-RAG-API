@@ -2,12 +2,15 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./backend  
+    user: "${UID}:${GID}"
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql://rag:rag@postgres:5432/rag
+      DATABASE_URL: postgresql+psycopg://rag:rag@postgres:5432/rag
       OLLAMA_URL: http://ollama:11434
+    volumes:
+      - ./backend:/app
     depends_on:
       postgres:
         condition: service_started
