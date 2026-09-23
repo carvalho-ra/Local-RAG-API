@@ -1,5 +1,21 @@
 services:
 
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://rag:rag@postgres:5432/rag
+      OLLAMA_URL: http://ollama:11434
+    depends_on:
+      postgres:
+        condition: service_started
+      ollama:
+        condition: service_healthy
+    networks:
+      - rag_network
+
   postgres:
     image: pgvector/pgvector:pg17
     environment:
