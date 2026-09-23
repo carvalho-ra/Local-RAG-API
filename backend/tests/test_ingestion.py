@@ -1,5 +1,9 @@
 from app.database import SessionLocal
-from app.services.ingestion import create_document, ingest_document
+from app.services.ingestion import (
+    create_document,
+    ingest_document,
+    validate_file_type,
+    )
 
 
 def test_create_document():
@@ -55,3 +59,15 @@ def test_ingest_document_md():
     assert document.storage_key.endswith("-README.md")
 
     db.close()
+
+
+def test_validate_file_type():
+    assert validate_file_type("file.pdf", "application/pdf")
+    assert validate_file_type("file.md", "text/markdown")
+    assert validate_file_type("file.txt", "text/plain")
+
+
+def test_validate_file_type_rejects_invalid_type():
+    assert not validate_file_type("file.pdf", "text/plain")
+    assert not validate_file_type("file.md", "application/pdf")
+    assert not validate_file_type("file.exe", "application/pdf")
