@@ -2,17 +2,17 @@ services:
 
   backend:
     build:
-      context: ./backend  
+      context: ./backend
     user: "${UID}:${GID}"
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql+psycopg://rag:rag@postgres:5432/rag
-      OLLAMA_URL: http://ollama:11434
-      MINIO_ENDPOINT: minio:9000
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
-      MINIO_BUCKET: documents
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      OLLAMA_URL: ${OLLAMA_URL}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_BUCKET: ${MINIO_BUCKET}
     volumes:
       - ./backend:/app
     depends_on:
@@ -26,9 +26,9 @@ services:
   postgres:
     image: pgvector/pgvector:pg17
     environment:
-      POSTGRES_DB: rag
-      POSTGRES_USER: rag
-      POSTGRES_PASSWORD: rag
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -40,8 +40,8 @@ services:
     image: quay.io/minio/minio
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: minio123
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -49,7 +49,7 @@ services:
       - minio_data:/data
     networks:
       - rag_network
-  
+
   minio-init:
     image: quay.io/minio/mc
     depends_on:
@@ -59,11 +59,11 @@ services:
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
-        until mc alias set local http://minio:9000 minio minio123; do
+        until mc alias set local http://minio:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY}; do
           sleep 1
         done
-        mc mb --ignore-existing local/documents
-  
+        mc mb --ignore-existing local/${MINIO_BUCKET}
+
   ollama:
     image: ollama/ollama
     ports:
@@ -87,7 +87,7 @@ services:
       ollama:
         condition: service_healthy
     environment:
-      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_HOST: ${OLLAMA_URL}
     networks:
       - rag_network
     dns:
@@ -96,8 +96,8 @@ services:
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
-        ollama pull gemma3:270m
-        ollama pull embeddinggemma
+        ollama pull ${OLLAMA_MODEL}
+        ollama pull ${OLLAMA_EMBEDDING_MODEL}
 
 volumes:
   postgres_data:
