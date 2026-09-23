@@ -11,11 +11,12 @@ async def test_rag_returns_response():
     try:
         response = await answer_question(
             db,
-            "Qual é o assunto principal do documento?",
+            "Qual é o nome do curso concluído por Rodrigo Carvalho?",
         )
-        
-        assert isinstance(response, str)
-        assert response.strip()
+
+        # print(f"\nResposta do RAG: {response}")
+
+        assert "Fundamentos do Python 1" in response
 
     finally:
         db.close()
