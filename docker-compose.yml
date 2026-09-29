@@ -1,5 +1,15 @@
 services:
 
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - rag_network
   backend:
     build:
       context: ./backend

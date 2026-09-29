@@ -62,8 +62,8 @@ storage_clear:
 	@docker compose exec backend python scripts/storage_clear.py
 
 clean-pycache:
-	find . -type d \( -name "__pycache__" -o -name ".pytest_cache" \) -exec rm -rf {} +
-	find . -type f -name "*.pyc" -delete
+	@find . -type d \( -name "__pycache__" -o -name ".pytest_cache" \) -exec rm -rf {} +
+	@find . -type f -name "*.pyc" -delete
 
 clean:
 	@docker compose down -v
