@@ -4,9 +4,20 @@ function App() {
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState('')
 
-  function handleSubmit(event: React.SyntheticEvent) {
+  async function handleSubmit(event: React.SyntheticEvent) {
     event.preventDefault()
-    setAnswer(question)
+
+    const response = await fetch('/ask', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({question})
+    })
+
+    const data = await response.json()
+
+    setAnswer(data.answer)
   }
 
   return (
