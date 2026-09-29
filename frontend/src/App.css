@@ -122,6 +122,11 @@
   color: var(--color-accent);
 }
 
+.question-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .question-form button:active {
   transform: translateY(1px);
 }

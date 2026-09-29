@@ -44,7 +44,7 @@ function App() {
           <span className="brand-name">Local RAG</span>
         </div>
 
-        <span className="status">  
+        <span className="status">
           <span className="status-dot" />
           API online
         </span>
@@ -62,9 +62,12 @@ function App() {
             placeholder="Digite sua pergunta..."
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
+            disabled={isThinking}
           />
 
-          <button type="submit">Perguntar</button>
+          <button type="submit" disabled={isThinking}>
+            Perguntar
+          </button>
         </form>
       </section>
 
