@@ -97,7 +97,7 @@ async def create_chunks(db, document, chunks):
 
 async def ingest_document(db, file_data, filename, content_type) -> Document|None:
     if validate_file_type(filename, content_type):
-        file_data = file_data.read()
+        file_data = await file_data.read()
 
         storage_key = f"{uuid.uuid4()}-{filename}"
 
