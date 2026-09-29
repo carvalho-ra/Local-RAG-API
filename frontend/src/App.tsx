@@ -4,21 +4,36 @@ import './App.css'
 function App() {
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState('')
+  const [isThinking, setIsThinking] = useState(false)
 
   async function handleSubmit(event: React.SyntheticEvent) {
     event.preventDefault()
 
-    const response = await fetch('/ask', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ question }),
-    })
+    setIsThinking(true)
 
-    const data = await response.json()
+    try {
+      const response = await fetch('/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question }),
+      })
 
-    setAnswer(data.answer)
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`Erro ${response.status}: ${errorText}`)
+      }
+
+      const data = await response.json()
+
+      setAnswer(data.answer)
+    } catch (error) {
+      console.error('Erro ao consultar a API:', error)
+      setAnswer('Não foi possível obter uma resposta da API.')
+    } finally {
+      setIsThinking(false)
+    }
   }
 
   return (
@@ -53,7 +68,13 @@ function App() {
         </form>
       </section>
 
-      {answer && (
+      {isThinking && (
+        <section className="answer-section">
+          <span className="section-label">PENSANDO...</span>
+        </section>
+      )}
+
+      {answer && !isThinking && (
         <section className="answer-section">
           <span className="section-label">RESPOSTA</span>
 

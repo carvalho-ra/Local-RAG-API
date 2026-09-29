@@ -77,13 +77,16 @@
 .question-form input {
   flex: 1;
   min-width: 0;
-  padding: 0.9rem 1rem;
+  padding: 0.95rem 1rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   outline: none;
   background: var(--color-surface);
   color: var(--color-text);
-  transition: border-color 0.15s ease;
+  font: inherit;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .question-form input::placeholder {
@@ -92,21 +95,35 @@
 
 .question-form input:focus {
   border-color: var(--color-focus);
+  box-shadow: 0 0 0 3px color-mix(
+    in srgb,
+    var(--color-focus) 12%,
+    transparent
+  );
 }
 
 .question-form button {
-  padding: 0.9rem 1.25rem;
+  padding: 0.95rem 1.35rem;
   border: 1px solid var(--color-accent);
   border-radius: var(--radius-md);
   background: var(--color-accent);
   color: var(--color-bg);
+  font: inherit;
   font-weight: 600;
-  transition: background 0.15s ease;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
 }
 
 .question-form button:hover {
   background: var(--color-accent-hover);
   color: var(--color-accent);
+}
+
+.question-form button:active {
+  transform: translateY(1px);
 }
 
 .answer-section {

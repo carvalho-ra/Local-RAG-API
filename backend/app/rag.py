@@ -8,11 +8,18 @@ async def answer_question(db, question: str) -> str:
 
     context = build_context(chunks)
 
-    prompt = f"""Contexto:
-{context}
+    prompt = f"""Responda diretamente à pergunta usando apenas o contexto abaixo.
+    Extraia somente a informação solicitada pela pergunta.
+    Não inclua outras informações do contexto.
+    Se a informação solicitada não estiver no contexto, diga que não encontrou a resposta.
+    
+    Contexto:
+    {context}
 
-Pergunta:
-{question}
-"""
+    Pergunta:
+    {question}
+
+    Responda em português:
+    """
 
     return await generate_response(prompt)
