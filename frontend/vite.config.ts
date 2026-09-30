@@ -13,6 +13,9 @@ export default defineConfig({
       '/upload': {
         target: 'http://backend:8000',
       },
+      '/documents': {
+        target: 'http://backend:8000',
+      },
     },
   },
 })

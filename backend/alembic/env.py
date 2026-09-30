@@ -8,7 +8,7 @@ from alembic import context
 import os
 
 from app.database import Base
-from app.models import Document, Chunk
+from app.models import Document, Chunk, Conversation, Message
 
 
 # this is the Alembic Config object, which provides
