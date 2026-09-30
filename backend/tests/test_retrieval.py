@@ -121,11 +121,12 @@ def test_expand_with_neighbors():
 
     results = expand_with_neighbors(
         db,
-        [chunks[1]],
+        [chunks[1], chunks[2]],
     )
 
     indexes = [chunk.chunk_index for chunk in results]
 
-    assert indexes == [0, 1, 2]
+    assert indexes == [0, 1, 2, 3]
+    assert len(results) == 4
 
     db.close()
