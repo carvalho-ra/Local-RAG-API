@@ -79,11 +79,12 @@ def chunk_text(text: str, chunk_size: int, overlap: int) -> list[str]:
 async def create_chunks(db, document, chunks):
     chunk_objs = []
 
-    for content in chunks:
+    for chunk_index, content in enumerate(chunks):
         embedding = await generate_embedding(content)
         chunk_objs.append(
             Chunk(
                 document_id=document.id,
+                chunk_index=chunk_index,
                 content=content,
                 embedding=embedding,
             )

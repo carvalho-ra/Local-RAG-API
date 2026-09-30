@@ -18,12 +18,14 @@ def test_search_similar_chunks():
 
     chunk_1 = Chunk(
         document_id=document.id,
+        chunk_index=0,
         content="primeiro chunk",
         embedding=[1.0] + [0.0] * 767,
     )
 
     chunk_2 = Chunk(
         document_id=document.id,
+        chunk_index=1,
         content="segundo chunk",
         embedding=[0.0, 1.0] + [0.0] * 766,
     )
@@ -58,6 +60,7 @@ async def test_retrieve_chunks():
 
     chunk_1 = Chunk(
         document_id=document.id,
+        chunk_index=0,
         content="Python é uma linguagem de programação.",
         embedding=await generate_embedding(
             "Python é uma linguagem de programação."
@@ -66,6 +69,7 @@ async def test_retrieve_chunks():
 
     chunk_2 = Chunk(
         document_id=document.id,
+        chunk_index=1,
         content="O Rio de Janeiro é uma cidade brasileira.",
         embedding=await generate_embedding(
             "O Rio de Janeiro é uma cidade brasileira."

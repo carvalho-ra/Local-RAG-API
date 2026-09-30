@@ -8,6 +8,7 @@ from app.services.ingestion import (
     create_chunks,
     )
 import pytest, pytest_asyncio
+from fastapi import UploadFile
 
 
 def test_create_document():
@@ -43,7 +44,10 @@ def test_validate_file_type_rejects_invalid_type():
 @pytest.mark.asyncio
 async def test_ingest_document_pdf():
     db = SessionLocal()
-    file = open("tests/fixtures/test.pdf", "rb")
+    file = UploadFile(
+        filename="test.pdf",
+        file=open("tests/fixtures/test.pdf", "rb"),
+    )
 
     document = await ingest_document(
         db,
@@ -63,7 +67,10 @@ async def test_ingest_document_pdf():
 @pytest.mark.asyncio
 async def test_ingest_document_md():
     db = SessionLocal()
-    file = open("tests/fixtures/README.md", "rb")
+    file = UploadFile(
+        filename="README.md",
+        file=open("tests/fixtures/README.md", "rb"),
+    )
 
     document = await ingest_document(
         db,
