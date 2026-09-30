@@ -1,8 +1,23 @@
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+}
+
 .app {
   width: min(1100px, calc(100% - 3rem));
   min-height: 100vh;
   margin: 0 auto;
-  padding: 2rem 1rem 4rem;
+  padding: 4rem 1rem 4rem;
+  box-sizing: border-box;
 }
 
 .header {
@@ -28,9 +43,9 @@
 .signature {
   font-family: var(--font-mono);
   font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-accent);
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: #2dd4a0;
+  letter-spacing: 0;
 }
 
 .status {
@@ -251,7 +266,7 @@
 }
 
 .question-section {
-  margin-top: 1rem;
+  margin-top: 8rem;
   margin-bottom: 0;
 }
 
@@ -342,6 +357,10 @@
 
   .conversation {
     height: 50vh;
+  }
+
+  .question-section {
+  margin-top: 2rem;
   }
 
   .question-form {

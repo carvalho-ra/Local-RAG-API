@@ -32,8 +32,10 @@ down: clean-pycache
 	@docker compose down
 
 test:
-	@docker compose exec backend pytest -v
-
+	@docker compose exec postgres sh -c 'psql -U $(POSTGRES_USER) -d postgres -c "DROP DATABASE IF EXISTS rag_test WITH (FORCE)"'
+	@docker compose exec postgres sh -c 'psql -U $(POSTGRES_USER) -d postgres -c "CREATE DATABASE rag_test"'
+	@docker compose exec -e DATABASE_URL=postgresql+psycopg://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/rag_test backend alembic upgrade head
+	@docker compose exec -e DATABASE_URL=postgresql+psycopg://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/rag_test backend pytest -v
 migrate:
 	@docker compose exec backend alembic upgrade head
 

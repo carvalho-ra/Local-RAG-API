@@ -7,7 +7,7 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
+      - frontend_node_modules:/app/node_modules
     networks:
       - rag_network
   backend:
@@ -49,7 +49,7 @@ services:
       - rag_network
 
   minio:
-    image: quay.io/minio/minio
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
@@ -63,7 +63,7 @@ services:
       - rag_network
 
   minio-init:
-    image: quay.io/minio/mc
+    image: pgsty/mc
     depends_on:
       - minio
     networks:
@@ -115,6 +115,7 @@ volumes:
   postgres_data:
   ollama_data:
   minio_data:
+  frontend_node_modules:
 
 networks:
   rag_network:

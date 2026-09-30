@@ -25,7 +25,11 @@ async def test_ask():
             )
 
         assert response.status_code == 200
-        assert response.json() == {"answer": "resposta final"}
+
+        data = response.json()
+
+        assert data["answer"] == "resposta final"
+        assert data["conversation_id"] is not None
 
 
 @pytest.mark.asyncio
