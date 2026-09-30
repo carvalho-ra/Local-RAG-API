@@ -15,11 +15,34 @@ def search_similar_chunks(db, query_embedding, limit=5):
     return db.scalars(statement).all()
 
 
+def expand_with_neighbors(db, chunks):
+    expanded = {}
+
+    for chunk in chunks:
+        expanded[chunk.id] = chunk
+
+        statement = select(Chunk).where(
+            Chunk.document_id == chunk.document_id,
+            Chunk.chunk_index.in_(
+                [chunk.chunk_index - 1, chunk.chunk_index + 1]
+            ),
+        )
+
+        neighbors = db.scalars(statement).all()
+
+        for neighbor in neighbors:
+            expanded[neighbor.id] = neighbor
+
+    return list(expanded.values())
+
+
 async def retrieve_chunks(db, question, limit=5):
     query_embedding = await generate_embedding(question)
 
-    return search_similar_chunks(
+    chunks = search_similar_chunks(
         db,
         query_embedding,
         limit,
     )
+
+    return expand_with_neighbors(db, chunks)

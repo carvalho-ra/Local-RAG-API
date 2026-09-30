@@ -1,7 +1,11 @@
 from app.database import SessionLocal
 from app.models import Chunk
 from app.services.ingestion import create_document
-from app.services.retrieval import search_similar_chunks, retrieve_chunks
+from app.services.retrieval import (
+    search_similar_chunks,
+    retrieve_chunks,
+    expand_with_neighbors,
+    )
 from app.services.embedding import generate_embedding
 import pytest
 
@@ -85,7 +89,43 @@ async def test_retrieve_chunks():
         limit=1,
     )
 
-    assert len(results) == 1
+    assert len(results) == 2
     assert results[0].content == "Python é uma linguagem de programação."
+    assert results[1].content == "O Rio de Janeiro é uma cidade brasileira."
+
+    db.close()
+
+
+def test_expand_with_neighbors():
+    db = SessionLocal()
+
+    document = create_document(
+        db,
+        "test.pdf",
+        "application/pdf",
+        "test.pdf",
+    )
+
+    chunks = [
+        Chunk(
+            document_id=document.id,
+            chunk_index=i,
+            content=f"chunk {i}",
+            embedding=[1.0] + [0.0] * 767,
+        )
+        for i in range(4)
+    ]
+
+    db.add_all(chunks)
+    db.commit()
+
+    results = expand_with_neighbors(
+        db,
+        [chunks[1]],
+    )
+
+    indexes = sorted(chunk.chunk_index for chunk in results)
+
+    assert indexes == [0, 1, 2]
 
     db.close()
