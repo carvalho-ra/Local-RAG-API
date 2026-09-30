@@ -124,7 +124,7 @@ def test_expand_with_neighbors():
         [chunks[1]],
     )
 
-    indexes = sorted(chunk.chunk_index for chunk in results)
+    indexes = [chunk.chunk_index for chunk in results]
 
     assert indexes == [0, 1, 2]
 
