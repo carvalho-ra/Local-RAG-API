@@ -1,0 +1,15 @@
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "8080:80"
+    networks:
+      - rag_network
+
+networks:
+  rag_network:
+    external: true
+    name: local-rag-api_rag_network

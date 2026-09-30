@@ -8,11 +8,20 @@ GID := $(shell id -g)
 export UID
 export GID
 
+GREEN := \033[0;32m
+YELLOW := \033[0;33m
+CYAN := \033[0;36m
+RED := \033[0;31m
+BOLD := \033[1m
+RESET := \033[0m
+
 TABLE ?= documents
 
 help:
 	@echo "Available commands:"
+	@echo "  make info               API infos"
 	@echo "  make up                 Start containers"
+	@echo "  make prod               Start production frontend"
 	@echo "  make down               Stop containers"
 	@echo "  make test               Run tests"
 	@echo "  make migrate            Apply database migrations"
@@ -24,9 +33,34 @@ help:
 	@echo "  make storage_list         List storage files"
 	@echo "  make storage_clear        Clear all storage files"
 
+info:
+	@IP=$$(hostname -I | awk '{print $$1}'); \
+	echo ""; \
+	echo "$(GREEN)$(BOLD)Local RAG API$(RESET)"; \
+	echo "────────────────────────────────────────"; \
+	echo "$(YELLOW)$(BOLD)Frontend:$(RESET)             $(CYAN)http://localhost:5173$(RESET)"; \
+	echo "$(YELLOW)$(BOLD)Production Frontend:$(RESET)  $(CYAN)http://localhost:8080$(RESET)"; \
+	echo "$(YELLOW)$(BOLD)API:$(RESET)                  $(CYAN)http://localhost:8000$(RESET)"; \
+	echo "$(YELLOW)$(BOLD)Swagger:$(RESET)              $(CYAN)http://localhost:8000/docs$(RESET)"; \
+	echo ""; \
+	echo "$(GREEN)$(BOLD)Rede local$(RESET)"; \
+	echo "────────────────────────────────────────"; \
+	echo "$(YELLOW)$(BOLD)Frontend:$(RESET)             $(RED)http://$$IP:5173$(RESET)"; \
+	echo "$(YELLOW)$(BOLD)Production Frontend:$(RESET)  $(RED)http://$$IP:8080$(RESET)"; \
+	echo "$(YELLOW)$(BOLD)API:$(RESET)                  $(RED)http://$$IP:8000$(RESET)"; \
+	echo "$(YELLOW)$(BOLD)Swagger:$(RESET)              $(RED)http://$$IP:8000/docs$(RESET)"; \
+	echo "────────────────────────────────────────"; \
+	echo ""
+	
 up:
 	@docker compose up -d --build
 	@$(MAKE) --no-print-directory migrate
+	@$(MAKE) --no-print-directory info
+
+prod: up
+	@docker compose -f docker-compose.yml down frontend
+	@docker compose -f docker-compose.prod.yml up -d --build
+	@$(MAKE) --no-print-directory info
 
 down: clean-pycache
 	@docker compose down
@@ -73,5 +107,5 @@ clean:
 fclean:
 	@docker compose down -v --remove-orphans --rmi all
 
-.PHONY: help up down test migrate migration db db_query db_table_clear db_clear \
+.PHONY: help info up prod down test migrate migration db db_query db_table_clear db_clear \
 	storage_list storage_clear clean-pycache clean fclean
