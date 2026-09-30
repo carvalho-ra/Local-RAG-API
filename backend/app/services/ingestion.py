@@ -96,8 +96,23 @@ async def create_chunks(db, document, chunks):
     return chunk_objs
 
 
+class DocumentAlreadyExistsError(Exception):
+    pass
+
+
 async def ingest_document(db, file_data, filename, content_type) -> Document|None:
     if validate_file_type(filename, content_type):
+        existing_document = (
+            db.query(Document)
+            .filter(Document.filename == filename)
+            .first()
+        )
+
+        if existing_document:
+            raise DocumentAlreadyExistsError(
+                f"Document already exists: {filename}"
+            )
+        
         file_data = await file_data.read()
 
         storage_key = f"{uuid.uuid4()}-{filename}"
