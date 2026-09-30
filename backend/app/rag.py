@@ -4,7 +4,7 @@ from app.services.retrieval import retrieve_chunks
 
 
 async def answer_question(db, question: str) -> str:
-    chunks = await retrieve_chunks(db, question)
+    chunks = await retrieve_chunks(db, question, limit=10)
 
     context = build_context(chunks)
 

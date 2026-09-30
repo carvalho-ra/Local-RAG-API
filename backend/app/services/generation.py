@@ -15,6 +15,9 @@ async def generate_response(prompt: str) -> str:
                 "model": OLLAMA_MODEL,
                 "prompt": prompt,
                 "stream": False,
+                "options": {
+                    "num_predict": 128,
+                },
             },
         )
 

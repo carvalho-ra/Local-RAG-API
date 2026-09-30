@@ -22,6 +22,6 @@ async def test_answer_question():
 
         assert result == "resposta final"
 
-        retrieve.assert_awaited_once_with(db, "Qual é a pergunta?")
+        retrieve.assert_awaited_once_with(db, "Qual é a pergunta?", limit=10)
         context.assert_called_once_with(["chunk 1", "chunk 2"])
         generate.assert_awaited_once()
