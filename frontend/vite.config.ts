@@ -10,6 +10,9 @@ export default defineConfig({
       '/ask': {
         target: 'http://backend:8000',
       },
+      '/upload': {
+        target: 'http://backend:8000',
+      },
     },
   },
 })

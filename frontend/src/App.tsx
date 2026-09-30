@@ -6,6 +6,10 @@ function App() {
   const [answer, setAnswer] = useState('')
   const [isThinking, setIsThinking] = useState(false)
 
+  const [file, setFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadMessage, setUploadMessage] = useState('')
+
   async function handleSubmit(event: React.SyntheticEvent) {
     event.preventDefault()
 
@@ -33,6 +37,48 @@ function App() {
       setAnswer('Não foi possível obter uma resposta da API.')
     } finally {
       setIsThinking(false)
+    }
+  }
+
+  async function handleUpload(event: React.SyntheticEvent) {
+    event.preventDefault()
+
+    if (!file) {
+      setUploadMessage('Selecione um arquivo.')
+      return
+    }
+
+    setIsUploading(true)
+    setUploadMessage('Enviando arquivo...')
+
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`Erro ${response.status}: ${errorText}`)
+      }
+
+      const data = await response.json()
+
+      if (data.error) {
+        setUploadMessage(data.error)
+        return
+      }
+
+      setUploadMessage(data.message)
+      setFile(null)
+    } catch (error) {
+      console.error('Erro ao enviar arquivo:', error)
+      setUploadMessage('Não foi possível enviar o arquivo.')
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -69,6 +115,36 @@ function App() {
             Perguntar
           </button>
         </form>
+      </section>
+
+      <section className="upload-section">
+        <form onSubmit={handleUpload} className="upload-form">
+          <input
+            type="file"
+            accept=".pdf,.md,.txt"
+            onChange={(event) => {
+              setFile(event.target.files?.[0] ?? null)
+              setUploadMessage('')
+            }}
+            disabled={isUploading}
+          />
+
+          <button type="submit" disabled={!file || isUploading}>
+            {isUploading ? 'Enviando...' : 'Enviar documento'}
+          </button>
+        </form>
+
+        {file && (
+          <p className="upload-file">
+            Arquivo selecionado: {file.name}
+          </p>
+        )}
+
+        {uploadMessage && (
+          <p className="upload-message">
+            {uploadMessage}
+          </p>
+        )}
       </section>
 
       {isThinking && (
