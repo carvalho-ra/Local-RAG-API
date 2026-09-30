@@ -33,10 +33,7 @@ def expand_with_neighbors(db, chunks):
         for neighbor in neighbors:
             expanded[neighbor.id] = neighbor
 
-    return sorted(
-        expanded.values(),
-        key=lambda chunk: (chunk.document_id, chunk.chunk_index),
-    )
+    return list(expanded.values())
 
 
 async def retrieve_chunks(db, question, limit=5):

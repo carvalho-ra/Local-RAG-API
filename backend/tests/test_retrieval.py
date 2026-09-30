@@ -126,7 +126,7 @@ def test_expand_with_neighbors():
 
     indexes = [chunk.chunk_index for chunk in results]
 
-    assert indexes == [0, 1, 2, 3]
+    assert indexes == [1, 0, 2, 3]
     assert len(results) == 4
 
     db.close()

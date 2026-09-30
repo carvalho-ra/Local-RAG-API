@@ -8,7 +8,7 @@ OLLAMA_MODEL = os.environ["OLLAMA_MODEL"]
 
 
 async def generate_response(prompt: str) -> str:
-    async with httpx.AsyncClient(timeout=120.0) as client:
+    async with httpx.AsyncClient(timeout=300.0) as client:
         response = await client.post(
             f"{OLLAMA_URL}/api/generate",
             json={

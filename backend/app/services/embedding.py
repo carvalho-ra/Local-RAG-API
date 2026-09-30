@@ -8,7 +8,7 @@ OLLAMA_EMBEDDING_MODEL = os.environ["OLLAMA_EMBEDDING_MODEL"]
 
 
 async def generate_embedding(text: str) -> list[float]:
-    async with httpx.AsyncClient(timeout=120.0) as client:
+    async with httpx.AsyncClient(timeout=300.0) as client:
         response = await client.post(
             f"{OLLAMA_URL}/api/embed",
             json={
